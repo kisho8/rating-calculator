@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a73e8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Rounding Calculator</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --option1: #e5ed4f;
+      --option2: #42bdf2;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-top: 12px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-row .input-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.125rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #fafafa;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .multiply-sign {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding-top: 28px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      color: white;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-option1 {
+      background: var(--option1);
+      margin-bottom: 10px;
+      color: rgb(85, 82, 82);
+    }
+
+    .btn-option1:hover {
+      background: #e3d102;
+      color: rgb(255, 254, 254);
+      color: rgb(85, 82, 82);
+    }
+
+    .btn-option2 {
+      background: var(--option2);
+    }
+
+    .btn-option2:hover {
+      background: #6d28d9;
+    }
+
+    .result-section {
+      display: none;
+    }
+
+    .result-section.visible {
+      display: block;
+    }
+
+    .result-box {
+      background: #f0f9ff;
+      border: 2px solid #bae6fd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .result-box .label {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-box .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .result-box.final {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+    }
+
+    .result-box.final .value {
+      color: var(--success);
+      font-size: 2rem;
+    }
+
+    .options {
+      display: none;
+    }
+
+    .options.visible {
+      display: block;
+    }
+
+    .steps {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .steps strong {
+      color: var(--text);
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .clear-btn:hover {
+      border-color: #d1d5db;
+      background: #f9fafb;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Make it feel more app-like on mobile */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      header h1 {
+        font-size: 1.375rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Rating Calculator</h1>
+      <p>Multiply → Round to 00/50 → Apply Option</p>
+    </header>
+
+    <div class="card">
+      <div class="input-row">
+        <div class="input-group">
+          <label for="num1">Floor Area</label>
+          <input type="number" id="num1" inputmode="decimal" placeholder="e.g. 776" step="any">
+        </div>
+        <div class="multiply-sign">×</div>
+        <div class="input-group">
+          <label for="num2">Rate</label>
+          <input type="number" id="num2" inputmode="decimal" placeholder="e.g. 2.5" step="any">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="calcBtn" style="margin-top: 20px;">
+        Calculate & Round
+      </button>
+    </div>
+
+    <div class="card result-section" id="resultSection">
+      <div class="result-box">
+        <div class="label">Product</div>
+        <div class="value" id="productValue">—</div>
+      </div>
+
+      <div class="result-box">
+        <div class="label">Rounded</div>
+        <div class="value" id="roundedValue">—</div>
+      </div>
+
+      <div class="steps" id="roundingSteps"></div>
+
+      <div class="options" id="optionsSection" style="margin-top: 20px;">
+        <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
+          Choose an option:
+        </p>
+        <button class="btn btn-option1" id="opt1Btn">
+          RES — Divide by 1.08
+        </button>
+        <button class="btn btn-option2" id="opt2Btn">
+          COM — Divide by 1.15
+        </button>
+      </div>
+
+      <div class="result-box final" id="finalBox" style="display: none; margin-top: 16px;">
+        <div class="label" id="finalLabel">Final Answer</div>
+        <div class="value" id="finalValue">—</div>
+        <div class="steps" id="finalSteps" style="margin-top: 10px; text-align: left;"></div>
+      </div>
+
+      <button class="btn clear-btn" id="clearBtn">Clear / New Calculation</button>
+    </div>
+
+    <footer>
+      Works offline • © 2026 Kisho • All rights reserved
+    </footer>
+  </div>
+
+  <script>
+    // ===== Rounding Logic =====
+    function roundToNearest50(num) {
+      // Work with absolute value for rounding, then restore sign
+      const sign = num < 0 ? -1 : 1;
+      const absNum = Math.abs(num);
+      const lastTwo = absNum % 100;
+
+      let rounded;
+      if (lastTwo <= 24) {
+        // 00-24 → previous 00
+        rounded = absNum - lastTwo;
+      } else if (lastTwo <= 74) {
+        // 25-74 → 50
+        rounded = absNum - lastTwo + 50;
+      } else {
+        // 75-99 → next 00
+        rounded = absNum - lastTwo + 100;
+      }
+
+      return sign * rounded;
+    }
+
+    function formatNumber(n) {
+      // Show integers without decimal, otherwise up to 2 decimals
+      if (Number.isInteger(n)) return n.toLocaleString('en-IN');
+      return n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+
+    // ===== DOM Elements =====
+    const num1Input = document.getElementById('num1');
+    const num2Input = document.getElementById('num2');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultSection = document.getElementById('resultSection');
+    const productValue = document.getElementById('productValue');
+    const roundedValue = document.getElementById('roundedValue');
+    const roundingSteps = document.getElementById('roundingSteps');
+    const optionsSection = document.getElementById('optionsSection');
+    const opt1Btn = document.getElementById('opt1Btn');
+    const opt2Btn = document.getElementById('opt2Btn');
+    const finalBox = document.getElementById('finalBox');
+    const finalLabel = document.getElementById('finalLabel');
+    const finalValue = document.getElementById('finalValue');
+    const finalSteps = document.getElementById('finalSteps');
+    const clearBtn = document.getElementById('clearBtn');
+
+    let currentRounded = null;
+
+    // ===== Calculate & Round =====
+    calcBtn.addEventListener('click', () => {
+      const n1 = parseFloat(num1Input.value);
+      const n2 = parseFloat(num2Input.value);
+
+      if (isNaN(n1) || isNaN(n2)) {
+        alert('Please enter both numbers.');
+        return;
+      }
+
+      const product = n1 * n2;
+      const rounded = roundToNearest50(product);
+      currentRounded = rounded;
+
+      // Show product
+      productValue.textContent = formatNumber(product);
+
+      // Show rounded
+      roundedValue.textContent = formatNumber(rounded);
+
+      // Explain the rounding
+      const lastTwo = Math.abs(product) % 100;
+      let rule = '';
+      if (lastTwo <= 24) {
+        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 00–24 → rounded to **00**`;
+      } else if (lastTwo <= 74) {
+        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 25–74 → rounded to **50**`;
+      } else {
+        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 75–99 → rounded to next **00**`;
+      }
+      roundingSteps.innerHTML = rule;
+
+      // Show options, hide previous final answer
+      optionsSection.classList.add('visible');
+      finalBox.style.display = 'none';
+      resultSection.classList.add('visible');
+
+      // Scroll to results on mobile
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // ===== Option 1: (rounded × 12) / 1.08 → floor =====
+    opt1Btn.addEventListener('click', () => {
+      if (currentRounded === null) return;
+
+      const intermediate = currentRounded * 12;
+      const result = intermediate / 1.08;
+      const final = Math.floor(result);   // omit decimal part
+
+      finalLabel.textContent = 'RES Annual Value (÷ 1.08)';
+      finalValue.textContent = formatNumber(final);
+      finalSteps.innerHTML = `
+        <strong>Steps:</strong><br>
+        ${formatNumber(currentRounded)} × 12 = ${formatNumber(intermediate)}<br>
+        ${formatNumber(intermediate)} ÷ 1.08 = ${result.toLocaleString('en-IN', { maximumFractionDigits: 2 })}<br>
+        Final (omit decimal) = <strong>${formatNumber(final)}</strong>
+      `;
+      finalBox.style.display = 'block';
+      finalBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // ===== Option 2: (rounded × 12) / 1.15 → floor =====
+    opt2Btn.addEventListener('click', () => {
+      if (currentRounded === null) return;
+
+      const intermediate = currentRounded * 12;
+      const result = intermediate / 1.15;
+      const final = Math.floor(result);   // omit decimal part
+
+      finalLabel.textContent = 'COM Annual Value (÷ 1.15)';
+      finalValue.textContent = formatNumber(final);
+      finalSteps.innerHTML = `
+        <strong>Steps:</strong><br>
+        ${formatNumber(currentRounded)} × 12 = ${formatNumber(intermediate)}<br>
+        ${formatNumber(intermediate)} ÷ 1.15 = ${result.toLocaleString('en-IN', { maximumFractionDigits: 2 })}<br>
+        Final (omit decimal) = <strong>${formatNumber(final)}</strong>
+      `;
+      finalBox.style.display = 'block';
+      finalBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // ===== Clear =====
+    clearBtn.addEventListener('click', () => {
+      num1Input.value = '';
+      num2Input.value = '';
+      currentRounded = null;
+      resultSection.classList.remove('visible');
+      optionsSection.classList.remove('visible');
+      finalBox.style.display = 'none';
+      num1Input.focus();
+    });
+
+    // Allow Enter key to calculate
+    [num1Input, num2Input].forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') calcBtn.click();
+      });
+    });
+  </script>
+</body>
+</html>
