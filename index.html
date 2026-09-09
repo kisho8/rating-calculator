@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#1a73e8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Rounding Calculator</title>
+  <title>Valuation Calculator</title>
   <style>
     :root {
       --primary: #1a73e8;
@@ -17,8 +17,11 @@
       --text-muted: #6b7280;
       --border: #e5e7eb;
       --success: #059669;
-      --option1: #e5ed4f;
-      --option2: #42bdf2;
+      --residential: #eab308;
+      --residential-dark: #ca8a04;
+      --commercial: #2563eb;
+      --commercial-dark: #1d4ed8;
+      --danger: #ef4444;
     }
 
     * {
@@ -33,73 +36,107 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 16px;
+      padding: 12px;
       line-height: 1.5;
+      padding-bottom: 40px;
     }
 
     .container {
-      max-width: 420px;
+      max-width: 480px;
       margin: 0 auto;
     }
 
     header {
       text-align: center;
-      margin-bottom: 24px;
-      padding-top: 12px;
+      margin-bottom: 18px;
+      padding-top: 8px;
     }
 
     header h1 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--primary);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     header p {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
 
     .card {
       background: var(--card);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    .input-group {
-      margin-bottom: 16px;
+    .floor-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fafafa;
+      position: relative;
     }
 
-    .input-group label {
-      display: block;
-      font-size: 0.875rem;
+    .floor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .floor-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 0.8rem;
       font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .remove-btn:hover {
+      background: #fef2f2;
     }
 
     .input-row {
       display: flex;
-      gap: 12px;
-      align-items: center;
+      gap: 10px;
     }
 
-    .input-row .input-group {
+    .input-group {
       flex: 1;
-      margin-bottom: 0;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     input[type="number"] {
       width: 100%;
-      padding: 14px 16px;
-      font-size: 1.125rem;
+      padding: 12px 12px;
+      font-size: 1.05rem;
       border: 2px solid var(--border);
-      border-radius: 12px;
-      background: #fafafa;
+      border-radius: 10px;
+      background: #fff;
       color: var(--text);
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s;
       appearance: textfield;
       -moz-appearance: textfield;
     }
@@ -113,27 +150,38 @@
     input[type="number"]:focus {
       outline: none;
       border-color: var(--primary);
-      background: #fff;
     }
 
-    .multiply-sign {
-      font-size: 1.5rem;
+    .rent-display {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #eff6ff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .rent-display.visible {
+      display: block;
+    }
+
+    .rent-display span {
       font-weight: 700;
-      color: var(--text-muted);
-      padding-top: 28px;
+      color: var(--primary);
     }
 
     .btn {
       display: block;
       width: 100%;
-      padding: 16px;
-      font-size: 1.0625rem;
+      padding: 14px;
+      font-size: 1rem;
       font-weight: 600;
       border: none;
       border-radius: 12px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       color: white;
+      margin-bottom: 10px;
     }
 
     .btn:active {
@@ -148,24 +196,45 @@
       background: var(--primary-dark);
     }
 
-    .btn-option1 {
-      background: var(--option1);
-      margin-bottom: 10px;
-      color: rgb(85, 82, 82);
+    .btn-add {
+      background: #fff;
+      color: var(--primary);
+      border: 2px dashed var(--primary);
+      margin-bottom: 16px;
     }
 
-    .btn-option1:hover {
-      background: #e3d102;
-      color: rgb(255, 254, 254);
-      color: rgb(85, 82, 82);
+    .btn-add:hover {
+      background: #eff6ff;
     }
 
-    .btn-option2 {
-      background: var(--option2);
+    .btn-residential {
+      background: var(--residential);
+      color: #1c1917;
     }
 
-    .btn-option2:hover {
-      background: #6d28d9;
+    .btn-residential:hover {
+      background: var(--residential-dark);
+      color: #fff;
+    }
+
+    .btn-commercial {
+      background: var(--commercial);
+    }
+
+    .btn-commercial:hover {
+      background: var(--commercial-dark);
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .btn-clear:hover {
+      border-color: #d1d5db;
+      background: #f9fafb;
     }
 
     .result-section {
@@ -176,300 +245,386 @@
       display: block;
     }
 
-    .result-box {
+    .total-box {
       background: #f0f9ff;
       border: 2px solid #bae6fd;
       border-radius: 12px;
       padding: 16px;
-      margin-bottom: 16px;
       text-align: center;
+      margin-bottom: 16px;
     }
 
-    .result-box .label {
-      font-size: 0.8125rem;
+    .total-box .label {
+      font-size: 0.8rem;
       color: var(--text-muted);
-      margin-bottom: 4px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-bottom: 4px;
     }
 
-    .result-box .value {
-      font-size: 1.75rem;
+    .total-box .value {
+      font-size: 1.9rem;
       font-weight: 700;
       color: var(--primary);
     }
 
-    .result-box.final {
-      background: #ecfdf5;
-      border-color: #a7f3d0;
-    }
-
-    .result-box.final .value {
-      color: var(--success);
-      font-size: 2rem;
-    }
-
-    .options {
+    .final-box {
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 14px;
       display: none;
     }
 
-    .options.visible {
+    .final-box.visible {
       display: block;
     }
 
+    .final-box.residential {
+      background: #fefce8;
+      border: 2px solid #fde047;
+    }
+
+    .final-box.commercial {
+      background: #eff6ff;
+      border: 2px solid #93c5fd;
+    }
+
+    .final-box .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .final-box .value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .final-box.residential .value {
+      color: #a16207;
+    }
+
+    .final-box.commercial .value {
+      color: #1d4ed8;
+    }
+
     .steps {
-      font-size: 0.8125rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       background: #f9fafb;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-top: 12px;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      text-align: left;
       line-height: 1.6;
     }
 
-    .steps strong {
+    .options-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 12px;
       color: var(--text);
-    }
-
-    .clear-btn {
-      background: transparent;
-      border: 2px solid var(--border);
-      color: var(--text-muted);
-      margin-top: 12px;
-    }
-
-    .clear-btn:hover {
-      border-color: #d1d5db;
-      background: #f9fafb;
+      text-align: center;
     }
 
     footer {
       text-align: center;
-      margin-top: 24px;
+      margin-top: 20px;
       font-size: 0.75rem;
       color: var(--text-muted);
     }
 
-    /* Make it feel more app-like on mobile */
-    @media (max-width: 480px) {
-      body {
-        padding: 12px;
-      }
-      header h1 {
-        font-size: 1.375rem;
-      }
+    .floor-list {
+      margin-bottom: 4px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Rating Calculator</h1>
-      <p>Multiply → Round to 00/50 → Apply Option</p>
+      <h1>Valuation Calculator</h1>
+      <p>Floor Area × Rate → Rent → Annual Value</p>
     </header>
 
+    <!-- Floors Input Section -->
     <div class="card">
-      <div class="input-row">
-        <div class="input-group">
-          <label for="num1">Floor Area</label>
-          <input type="number" id="num1" inputmode="decimal" placeholder="e.g. 776" step="any">
+      <div class="floor-list" id="floorList">
+        <!-- Ground Floor -->
+        <div class="floor-card" data-floor="0">
+          <div class="floor-header">
+            <div class="floor-title">Ground Floor</div>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Floor Area (FA)</label>
+              <input type="number" class="fa-input" inputmode="decimal" placeholder="e.g. 877" step="any">
+            </div>
+            <div class="input-group">
+              <label>Rate</label>
+              <input type="number" class="rate-input" inputmode="decimal" placeholder="e.g. 5.10" step="any">
+            </div>
+          </div>
+          <div class="rent-display">
+            Rent: <span class="rent-value">—</span>
+          </div>
         </div>
-        <div class="multiply-sign">×</div>
-        <div class="input-group">
-          <label for="num2">Rate</label>
-          <input type="number" id="num2" inputmode="decimal" placeholder="e.g. 2.5" step="any">
+
+        <!-- 1st Floor -->
+        <div class="floor-card" data-floor="1">
+          <div class="floor-header">
+            <div class="floor-title">1st Floor</div>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Floor Area (FA)</label>
+              <input type="number" class="fa-input" inputmode="decimal" placeholder="e.g. 456" step="any">
+            </div>
+            <div class="input-group">
+              <label>Rate</label>
+              <input type="number" class="rate-input" inputmode="decimal" placeholder="e.g. 2.50" step="any">
+            </div>
+          </div>
+          <div class="rent-display">
+            Rent: <span class="rent-value">—</span>
+          </div>
         </div>
       </div>
 
-      <button class="btn btn-primary" id="calcBtn" style="margin-top: 20px;">
-        Calculate & Round
-      </button>
+      <button class="btn btn-add" id="addFloorBtn">+ Add Floor</button>
+
+      <button class="btn btn-primary" id="calcBtn">Calculate Rents</button>
     </div>
 
+    <!-- Results Section -->
     <div class="card result-section" id="resultSection">
-      <div class="result-box">
-        <div class="label">Product</div>
-        <div class="value" id="productValue">—</div>
+      <div class="total-box">
+        <div class="label">Total Monthly Rent</div>
+        <div class="value" id="totalRent">—</div>
       </div>
 
-      <div class="result-box">
-        <div class="label">Rounded</div>
-        <div class="value" id="roundedValue">—</div>
-      </div>
+      <div class="options-title">Select Property Type</div>
 
-      <div class="steps" id="roundingSteps"></div>
+      <button class="btn btn-residential" id="resBtn">
+        Residential (÷ 1.08)
+      </button>
 
-      <div class="options" id="optionsSection" style="margin-top: 20px;">
-        <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
-          Choose an option:
-        </p>
-        <button class="btn btn-option1" id="opt1Btn">
-          RES — Divide by 1.08
-        </button>
-        <button class="btn btn-option2" id="opt2Btn">
-          COM — Divide by 1.15
-        </button>
-      </div>
+      <button class="btn btn-commercial" id="comBtn">
+        Commercial (÷ 1.15)
+      </button>
 
-      <div class="result-box final" id="finalBox" style="display: none; margin-top: 16px;">
-        <div class="label" id="finalLabel">Final Answer</div>
+      <div class="final-box" id="finalBox">
+        <div class="label" id="finalLabel">Annual Value</div>
         <div class="value" id="finalValue">—</div>
-        <div class="steps" id="finalSteps" style="margin-top: 10px; text-align: left;"></div>
+        <div class="steps" id="finalSteps"></div>
       </div>
 
-      <button class="btn clear-btn" id="clearBtn">Clear / New Calculation</button>
+      <button class="btn btn-clear" id="clearBtn">Clear / New Calculation</button>
     </div>
 
     <footer>
-      Works offline • © 2026 Kisho • All rights reserved
+      Valuation Rating Card Calculator
     </footer>
   </div>
 
   <script>
     // ===== Rounding Logic =====
     function roundToNearest50(num) {
-      // Work with absolute value for rounding, then restore sign
       const sign = num < 0 ? -1 : 1;
       const absNum = Math.abs(num);
       const lastTwo = absNum % 100;
 
       let rounded;
       if (lastTwo <= 24) {
-        // 00-24 → previous 00
         rounded = absNum - lastTwo;
       } else if (lastTwo <= 74) {
-        // 25-74 → 50
         rounded = absNum - lastTwo + 50;
       } else {
-        // 75-99 → next 00
         rounded = absNum - lastTwo + 100;
       }
-
       return sign * rounded;
     }
 
     function formatNumber(n) {
-      // Show integers without decimal, otherwise up to 2 decimals
       if (Number.isInteger(n)) return n.toLocaleString('en-IN');
       return n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
     }
 
-    // ===== DOM Elements =====
-    const num1Input = document.getElementById('num1');
-    const num2Input = document.getElementById('num2');
+    // ===== Floor Management =====
+    const floorList = document.getElementById('floorList');
+    const addFloorBtn = document.getElementById('addFloorBtn');
+    let extraFloorCount = 0;
+
+    const floorNames = ['Ground Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', 
+                        '5th Floor', '6th Floor', '7th Floor', '8th Floor', '9th Floor', '10th Floor'];
+
+    function getFloorName(index) {
+      if (index < floorNames.length) return floorNames[index];
+      return (index + 1) + 'th Floor';
+    }
+
+    addFloorBtn.addEventListener('click', () => {
+      extraFloorCount++;
+      const floorIndex = 1 + extraFloorCount;
+
+      const floorCard = document.createElement('div');
+      floorCard.className = 'floor-card';
+      floorCard.dataset.floor = floorIndex;
+
+      floorCard.innerHTML = `
+        <div class="floor-header">
+          <div class="floor-title">${getFloorName(floorIndex)}</div>
+          <button class="remove-btn" onclick="removeFloor(this)">Remove</button>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Floor Area (FA)</label>
+            <input type="number" class="fa-input" inputmode="decimal" placeholder="Enter FA" step="any">
+          </div>
+          <div class="input-group">
+            <label>Rate</label>
+            <input type="number" class="rate-input" inputmode="decimal" placeholder="Enter Rate" step="any">
+          </div>
+        </div>
+        <div class="rent-display">
+          Rent: <span class="rent-value">—</span>
+        </div>
+      `;
+
+      floorList.appendChild(floorCard);
+    });
+
+    function removeFloor(btn) {
+      const card = btn.closest('.floor-card');
+      card.remove();
+    }
+
+    // ===== Calculate =====
     const calcBtn = document.getElementById('calcBtn');
     const resultSection = document.getElementById('resultSection');
-    const productValue = document.getElementById('productValue');
-    const roundedValue = document.getElementById('roundedValue');
-    const roundingSteps = document.getElementById('roundingSteps');
-    const optionsSection = document.getElementById('optionsSection');
-    const opt1Btn = document.getElementById('opt1Btn');
-    const opt2Btn = document.getElementById('opt2Btn');
+    const totalRentEl = document.getElementById('totalRent');
     const finalBox = document.getElementById('finalBox');
     const finalLabel = document.getElementById('finalLabel');
     const finalValue = document.getElementById('finalValue');
     const finalSteps = document.getElementById('finalSteps');
-    const clearBtn = document.getElementById('clearBtn');
 
-    let currentRounded = null;
+    let currentTotalRent = null;
 
-    // ===== Calculate & Round =====
     calcBtn.addEventListener('click', () => {
-      const n1 = parseFloat(num1Input.value);
-      const n2 = parseFloat(num2Input.value);
+      const floorCards = document.querySelectorAll('.floor-card');
+      let totalRent = 0;
+      let hasValid = false;
+      let error = false;
 
-      if (isNaN(n1) || isNaN(n2)) {
-        alert('Please enter both numbers.');
+      floorCards.forEach(card => {
+        const faInput = card.querySelector('.fa-input');
+        const rateInput = card.querySelector('.rate-input');
+        const rentDisplay = card.querySelector('.rent-display');
+        const rentValue = card.querySelector('.rent-value');
+
+        const fa = parseFloat(faInput.value);
+        const rate = parseFloat(rateInput.value);
+
+        if (faInput.value === '' && rateInput.value === '') {
+          rentDisplay.classList.remove('visible');
+          return;
+        }
+
+        if (isNaN(fa) || isNaN(rate) || fa < 0 || rate < 0) {
+          alert('Please enter valid Floor Area and Rate for all filled floors.');
+          error = true;
+          return;
+        }
+
+        const product = fa * rate;
+        const rounded = roundToNearest50(product);
+
+        rentValue.textContent = formatNumber(rounded);
+        rentDisplay.classList.add('visible');
+
+        totalRent += rounded;
+        hasValid = true;
+      });
+
+      if (error) return;
+
+      if (!hasValid) {
+        alert('Please enter at least one floor with Floor Area and Rate.');
         return;
       }
 
-      const product = n1 * n2;
-      const rounded = roundToNearest50(product);
-      currentRounded = rounded;
+      currentTotalRent = totalRent;
+      totalRentEl.textContent = formatNumber(totalRent);
 
-      // Show product
-      productValue.textContent = formatNumber(product);
+      finalBox.classList.remove('visible', 'residential', 'commercial');
 
-      // Show rounded
-      roundedValue.textContent = formatNumber(rounded);
-
-      // Explain the rounding
-      const lastTwo = Math.abs(product) % 100;
-      let rule = '';
-      if (lastTwo <= 24) {
-        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 00–24 → rounded to **00**`;
-      } else if (lastTwo <= 74) {
-        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 25–74 → rounded to **50**`;
-      } else {
-        rule = `Last two digits (${lastTwo.toFixed(0).padStart(2,'0')}) are 75–99 → rounded to next **00**`;
-      }
-      roundingSteps.innerHTML = rule;
-
-      // Show options, hide previous final answer
-      optionsSection.classList.add('visible');
-      finalBox.style.display = 'none';
       resultSection.classList.add('visible');
-
-      // Scroll to results on mobile
       resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // ===== Option 1: (rounded × 12) / 1.08 → floor =====
-    opt1Btn.addEventListener('click', () => {
-      if (currentRounded === null) return;
+    // ===== Residential =====
+    document.getElementById('resBtn').addEventListener('click', () => {
+      if (currentTotalRent === null) return;
 
-      const intermediate = currentRounded * 12;
+      const intermediate = currentTotalRent * 12;
       const result = intermediate / 1.08;
-      const final = Math.floor(result);   // omit decimal part
+      const final = Math.floor(result);
 
-      finalLabel.textContent = 'RES Annual Value (÷ 1.08)';
+      finalLabel.textContent = 'Annual Value (Residential)';
       finalValue.textContent = formatNumber(final);
       finalSteps.innerHTML = `
-        <strong>Steps:</strong><br>
-        ${formatNumber(currentRounded)} × 12 = ${formatNumber(intermediate)}<br>
+        <strong>Calculation:</strong><br>
+        Total Rent ${formatNumber(currentTotalRent)} × 12 = ${formatNumber(intermediate)}<br>
         ${formatNumber(intermediate)} ÷ 1.08 = ${result.toLocaleString('en-IN', { maximumFractionDigits: 2 })}<br>
-        Final (omit decimal) = <strong>${formatNumber(final)}</strong>
+        Annual Value = <strong>${formatNumber(final)}</strong>
       `;
-      finalBox.style.display = 'block';
+
+      finalBox.classList.remove('commercial');
+      finalBox.classList.add('visible', 'residential');
       finalBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
-    // ===== Option 2: (rounded × 12) / 1.15 → floor =====
-    opt2Btn.addEventListener('click', () => {
-      if (currentRounded === null) return;
+    // ===== Commercial =====
+    document.getElementById('comBtn').addEventListener('click', () => {
+      if (currentTotalRent === null) return;
 
-      const intermediate = currentRounded * 12;
+      const intermediate = currentTotalRent * 12;
       const result = intermediate / 1.15;
-      const final = Math.floor(result);   // omit decimal part
+      const final = Math.floor(result);
 
-      finalLabel.textContent = 'COM Annual Value (÷ 1.15)';
+      finalLabel.textContent = 'Annual Value (Commercial)';
       finalValue.textContent = formatNumber(final);
       finalSteps.innerHTML = `
-        <strong>Steps:</strong><br>
-        ${formatNumber(currentRounded)} × 12 = ${formatNumber(intermediate)}<br>
+        <strong>Calculation:</strong><br>
+        Total Rent ${formatNumber(currentTotalRent)} × 12 = ${formatNumber(intermediate)}<br>
         ${formatNumber(intermediate)} ÷ 1.15 = ${result.toLocaleString('en-IN', { maximumFractionDigits: 2 })}<br>
-        Final (omit decimal) = <strong>${formatNumber(final)}</strong>
+        Annual Value = <strong>${formatNumber(final)}</strong>
       `;
-      finalBox.style.display = 'block';
+
+      finalBox.classList.remove('residential');
+      finalBox.classList.add('visible', 'commercial');
       finalBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
-    // ===== Clear =====
-    clearBtn.addEventListener('click', () => {
-      num1Input.value = '';
-      num2Input.value = '';
-      currentRounded = null;
-      resultSection.classList.remove('visible');
-      optionsSection.classList.remove('visible');
-      finalBox.style.display = 'none';
-      num1Input.focus();
-    });
+    // ===== Clear / Reset =====
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      const extraFloors = document.querySelectorAll('.floor-card[data-floor]:not([data-floor="0"]):not([data-floor="1"])');
+      extraFloors.forEach(f => f.remove());
+      extraFloorCount = 0;
 
-    // Allow Enter key to calculate
-    [num1Input, num2Input].forEach(input => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') calcBtn.click();
+      document.querySelectorAll('.fa-input, .rate-input').forEach(input => {
+        input.value = '';
       });
+
+      document.querySelectorAll('.rent-display').forEach(d => d.classList.remove('visible'));
+
+      currentTotalRent = null;
+      resultSection.classList.remove('visible');
+      finalBox.classList.remove('visible', 'residential', 'commercial');
+
+      document.querySelector('.fa-input').focus();
     });
   </script>
 </body>
